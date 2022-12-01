@@ -1,5 +1,5 @@
 [package]
-name = "aoc_lib"
+name = "aoc-lib"
 version = "1.0.0"
 edition = "2021"
 authors = ["Keval Kapdee <keval@thechubbypanda.net>"]
