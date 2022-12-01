@@ -12,8 +12,7 @@ pub fn part2(input: String) -> usize {
         .map(|inv| inv.iter().sum())
         .collect::<Vec<usize>>();
     elves.sort_unstable();
-    elves.reverse();
-    elves.iter().take(3).sum()
+    elves.iter().rev().take(3).sum()
 }
 
 fn parse_input(input: String) -> Vec<Vec<usize>> {
@@ -25,9 +24,8 @@ fn parse_input(input: String) -> Vec<Vec<usize>> {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
-
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
