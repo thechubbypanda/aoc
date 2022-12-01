@@ -15,13 +15,13 @@ dependencies = [
 name = "aoc"
 version = "0.1.0"
 dependencies = [
- "aoc_lib",
+ "aoc-lib",
  "regex",
  "scanf",
 ]
 
 [[package]]
-name = "aoc_lib"
+name = "aoc-lib"
 version = "1.0.0"
 dependencies = [
  "home",
