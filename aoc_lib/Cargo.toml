@@ -6,7 +6,7 @@ authors = ["Keval Kapdee <keval@thechubbypanda.net>"]
 description = "A library that lets you focus on problem-solving rather than boilerplate when doing Advent of Code"
 license = "Apache License 2.0"
 readme = "README.md"
-repository = "https://github.com/thechubbypanda/aoc/aoc_lib"
+repository = "https://github.com/thechubbypanda/aoc"
 
 [dependencies]
 home = "0.5.4"
