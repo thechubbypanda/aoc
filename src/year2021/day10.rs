@@ -61,7 +61,7 @@ pub fn part1(input: String) -> usize {
 pub fn part2(input: String) -> usize {
     let input = to_lines(&input);
     let mut stack: Vec<char> = Vec::new();
-    let mut scores  = Vec::new();
+    let mut scores = Vec::new();
     for l in input.iter() {
         let mut bad = false;
         for c in l.chars() {
@@ -110,8 +110,8 @@ pub fn part2(input: String) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
@@ -121,5 +121,15 @@ mod tests {
     #[test]
     fn run_part1() {
         run_real!(part1);
+    }
+
+    #[test]
+    fn test_part2() {
+        run_test!(part2);
+    }
+
+    #[test]
+    fn run_part2() {
+        run_real!(part2);
     }
 }

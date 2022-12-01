@@ -1,10 +1,7 @@
 use std::cmp::{max, min};
 
 pub fn part1(input: String) -> usize {
-    let mut input: Vec<usize> = input
-        .split(",")
-        .map(|s| s.parse().unwrap())
-        .collect();
+    let mut input: Vec<usize> = input.split(",").map(|s| s.parse().unwrap()).collect();
     input.sort();
     // let mut seen = Vec::new();
     // for c in input.iter() {
@@ -33,36 +30,32 @@ pub fn part1(input: String) -> usize {
     // }
     let crab = input[input.len() / 2];
     println!("{}", crab);
-    input
-        .iter()
-        .map(|c| max(*c, crab) - min(*c, crab))
-        .sum()
+    input.iter().map(|c| max(*c, crab) - min(*c, crab)).sum()
 }
 
 pub fn part2(input: String) -> usize {
-    let mut input: Vec<usize> = input
-        .split(",")
-        .map(|s| s.parse().unwrap())
-        .collect();
+    let mut input: Vec<usize> = input.split(",").map(|s| s.parse().unwrap()).collect();
     input.sort();
     let crab = input.iter().sum::<usize>() / input.len();
     let crab2 = crab - 1;
-    min(input
-        .iter()
-        .map(|c| max(*c, crab) - min(*c, crab))
-        .map(|c| (1..=c).sum::<usize>())
-        .sum(),
-    input
-        .iter()
-        .map(|c| max(*c, crab2) - min(*c, crab2))
-        .map(|c| (1..=c).sum::<usize>())
-        .sum())
+    min(
+        input
+            .iter()
+            .map(|c| max(*c, crab) - min(*c, crab))
+            .map(|c| (1..=c).sum::<usize>())
+            .sum(),
+        input
+            .iter()
+            .map(|c| max(*c, crab2) - min(*c, crab2))
+            .map(|c| (1..=c).sum::<usize>())
+            .sum(),
+    )
 }
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
@@ -72,5 +65,15 @@ mod tests {
     #[test]
     fn run_part1() {
         run_real!(part1);
+    }
+
+    #[test]
+    fn test_part2() {
+        run_test!(part2);
+    }
+
+    #[test]
+    fn run_part2() {
+        run_real!(part2);
     }
 }

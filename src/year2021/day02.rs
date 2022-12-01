@@ -67,8 +67,8 @@ pub fn part2(input: String) -> i32 {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
@@ -78,5 +78,15 @@ mod tests {
     #[test]
     fn run_part1() {
         run_real!(part1);
+    }
+
+    #[test]
+    fn test_part2() {
+        run_test!(part2);
+    }
+
+    #[test]
+    fn run_part2() {
+        run_real!(part2);
     }
 }

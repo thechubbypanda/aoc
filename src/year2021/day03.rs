@@ -1,4 +1,4 @@
-use aoc_lib::util::{transpose, to_lines};
+use aoc_lib::util::{to_lines, transpose};
 
 fn e_and_g(input: &Vec<Vec<char>>) -> (Vec<char>, Vec<char>) {
     let mut gamma = Vec::new();
@@ -30,7 +30,7 @@ pub fn part1(input: String) -> usize {
 
 pub fn part2(input: String) -> usize {
     let input = to_lines(&input);
-    let input: Vec<Vec<char>> =input.iter().map(|x| x.chars().collect()).collect();
+    let input: Vec<Vec<char>> = input.iter().map(|x| x.chars().collect()).collect();
     let mut o2 = input.clone();
     for i in 0..o2.len() {
         let (_, gamma) = e_and_g(&transpose(&o2));
@@ -53,8 +53,8 @@ pub fn part2(input: String) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
@@ -64,5 +64,15 @@ mod tests {
     #[test]
     fn run_part1() {
         run_real!(part1);
+    }
+
+    #[test]
+    fn test_part2() {
+        run_test!(part2);
+    }
+
+    #[test]
+    fn run_part2() {
+        run_real!(part2);
     }
 }

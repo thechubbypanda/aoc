@@ -4,7 +4,12 @@ type Board = Vec<Vec<i32>>;
 
 pub fn part1(input: String) -> i32 {
     let mut input = input.split("\n\n");
-    let nums: Vec<i32> = input.next().unwrap().split(",").map(|n| n.parse().unwrap()).collect();
+    let nums: Vec<i32> = input
+        .next()
+        .unwrap()
+        .split(",")
+        .map(|n| n.parse().unwrap())
+        .collect();
 
     let mut boards: Vec<Board> = input
         .map(|board| {
@@ -54,7 +59,12 @@ fn winning_board(board: &Board) -> bool {
 
 pub fn part2(input: String) -> i32 {
     let mut input = input.split("\n\n");
-    let nums: Vec<i32> = input.next().unwrap().split(",").map(|n| n.parse().unwrap()).collect();
+    let nums: Vec<i32> = input
+        .next()
+        .unwrap()
+        .split(",")
+        .map(|n| n.parse().unwrap())
+        .collect();
 
     let mut boards: Vec<Board> = input
         .map(|board| {
@@ -112,8 +122,8 @@ pub fn part2(input: String) -> i32 {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
@@ -123,5 +133,15 @@ mod tests {
     #[test]
     fn run_part1() {
         run_real!(part1);
+    }
+
+    #[test]
+    fn test_part2() {
+        run_test!(part2);
+    }
+
+    #[test]
+    fn run_part2() {
+        run_real!(part2);
     }
 }

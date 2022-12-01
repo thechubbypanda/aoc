@@ -1,10 +1,10 @@
+use crate::input_path::get_day_path;
+use crate::input_type::InputType;
 use client::AocClient;
 use scanf::sscanf;
 use std::fmt::Display;
 use std::fs::File;
 use std::time::Instant;
-use crate::input_path::get_day_path;
-use crate::input_type::InputType;
 
 pub mod input_type;
 pub mod util;
@@ -15,8 +15,8 @@ mod input_path;
 #[macro_export]
 macro_rules! run_test {
     ($e:expr) => {
-        use aoc_lib::run;
         use aoc_lib::input_type::InputType;
+        use aoc_lib::run;
         run(file!(), $e, InputType::Test);
     };
 }
@@ -24,8 +24,8 @@ macro_rules! run_test {
 #[macro_export]
 macro_rules! run_real {
     ($e:expr) => {
-        use aoc_lib::run;
         use aoc_lib::input_type::InputType;
+        use aoc_lib::run;
         run(file!(), $e, InputType::Real);
     };
 }
@@ -41,7 +41,10 @@ where
     let input = match input_type {
         InputType::Real => AocClient::new(year).get_input(day),
         InputType::Test => {
-            let file = &get_day_path(year, day, input_type).to_str().unwrap().to_string();
+            let file = &get_day_path(year, day, input_type)
+                .to_str()
+                .unwrap()
+                .to_string();
             std::fs::read_to_string(file).unwrap_or_else(|e| {
                 println!("Failed to find {file}");
                 match File::create(file) {
@@ -53,7 +56,7 @@ where
         }
     };
     if input.is_empty() {
-        return
+        return;
     }
     let timer = Instant::now();
     let r = f(input);

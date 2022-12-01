@@ -122,8 +122,13 @@ pub fn part2(input: String) -> usize {
         .iter()
         .map(|l| Node::from_chars(&mut l.chars()))
         .collect::<Vec<Node>>();
-    nums.clone().into_iter()
-        .map(|l| nums.clone().into_iter().map(move |r| Node::pair(l.clone(), r)))
+    nums.clone()
+        .into_iter()
+        .map(|l| {
+            nums.clone()
+                .into_iter()
+                .map(move |r| Node::pair(l.clone(), r))
+        })
         .flatten()
         .map(|sum| sum.reduce().magnitude())
         .max()
@@ -132,8 +137,8 @@ pub fn part2(input: String) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
@@ -143,5 +148,15 @@ mod tests {
     #[test]
     fn run_part1() {
         run_real!(part1);
+    }
+
+    #[test]
+    fn test_part2() {
+        run_test!(part2);
+    }
+
+    #[test]
+    fn run_part2() {
+        run_real!(part2);
     }
 }

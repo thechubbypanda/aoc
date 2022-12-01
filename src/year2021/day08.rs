@@ -64,7 +64,7 @@ pub fn part2(input: String) -> usize {
             )
         })
         .collect();
-        let mut total = 0;
+    let mut total = 0;
     for (uniques, output) in input {
         let uniques: Vec<(String, Option<usize>)> = uniques
             .into_iter()
@@ -161,8 +161,8 @@ fn safe_push(found: &mut Vec<(String, usize)>, i: (String, usize)) {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
@@ -172,5 +172,15 @@ mod tests {
     #[test]
     fn run_part1() {
         run_real!(part1);
+    }
+
+    #[test]
+    fn test_part2() {
+        run_test!(part2);
+    }
+
+    #[test]
+    fn run_part2() {
+        run_real!(part2);
     }
 }

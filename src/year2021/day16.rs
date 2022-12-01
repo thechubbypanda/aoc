@@ -131,27 +131,27 @@ fn parse_packet_2(packet: &String, index: &mut usize) -> usize {
                 return 1;
             }
             0
-        },
+        }
         6 => {
             if vs[0] < vs[1] {
                 return 1;
             }
             0
-        },
+        }
         7 => {
             if vs[0] == vs[1] {
                 return 1;
             }
             0
-        },
+        }
         _ => unreachable!(),
-    }
+    };
 }
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
@@ -161,5 +161,15 @@ mod tests {
     #[test]
     fn run_part1() {
         run_real!(part1);
+    }
+
+    #[test]
+    fn test_part2() {
+        run_test!(part2);
+    }
+
+    #[test]
+    fn run_part2() {
+        run_real!(part2);
     }
 }

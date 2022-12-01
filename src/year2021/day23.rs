@@ -1,5 +1,8 @@
 enum Pod {
-A,B,C,D,
+    A,
+    B,
+    C,
+    D,
 }
 
 fn energy(p: Pod) -> usize {
