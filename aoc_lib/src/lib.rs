@@ -1,10 +1,13 @@
-use crate::input_path::get_day_path;
-use crate::input_type::InputType;
-use client::AocClient;
-use scanf::sscanf;
 use std::fmt::Display;
 use std::fs::File;
 use std::time::Instant;
+
+use scanf::sscanf;
+
+use client::AocClient;
+
+use crate::input_path::get_day_path;
+use crate::input_type::InputType;
 
 pub mod input_type;
 pub mod util;
@@ -48,7 +51,10 @@ where
             std::fs::read_to_string(file).unwrap_or_else(|e| {
                 println!("Failed to find {file}");
                 match File::create(file) {
-                    Ok(_) => println!("Created empty file: {file}"),
+                    Ok(_) => {
+                        println!("Created empty file: {file}");
+                        println!("Place your test data in there and re-run");
+                    }
                     Err(_) => println!("Error: {e}"),
                 }
                 String::new()
