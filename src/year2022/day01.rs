@@ -1,10 +1,17 @@
 pub fn part1(input: String) -> usize {
-    parse_input(input).into_iter().map(|inv| inv.iter().sum::<usize>()).max().unwrap()
+    parse_input(input)
+        .into_iter()
+        .map(|inv| inv.iter().sum())
+        .max()
+        .unwrap()
 }
 
 pub fn part2(input: String) -> usize {
-    let mut elves = parse_input(input).into_iter().map(|inv| inv.iter().sum::<usize>()).collect::<Vec<usize>>();
-    elves.sort();
+    let mut elves = parse_input(input)
+        .into_iter()
+        .map(|inv| inv.iter().sum())
+        .collect::<Vec<usize>>();
+    elves.sort_unstable();
     elves.reverse();
     elves.iter().take(3).sum()
 }
