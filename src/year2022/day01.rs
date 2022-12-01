@@ -1,17 +1,26 @@
-use aoc_lib::util::{parse_strings, to_lines};
-
 pub fn part1(input: String) -> usize {
-    0
+    parse_input(input).into_iter().map(|inv| inv.iter().sum::<usize>()).max().unwrap()
 }
 
 pub fn part2(input: String) -> usize {
-    0
+    let mut elves = parse_input(input).into_iter().map(|inv| inv.iter().sum::<usize>()).collect::<Vec<usize>>();
+    elves.sort();
+    elves.reverse();
+    elves.iter().take(3).sum()
+}
+
+fn parse_input(input: String) -> Vec<Vec<usize>> {
+    input
+        .split("\n\n")
+        .map(|s| s.lines().map(|s| s.parse().unwrap()).collect())
+        .collect()
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use aoc_lib::*;
+
+    use super::*;
 
     #[test]
     fn test_part1() {
