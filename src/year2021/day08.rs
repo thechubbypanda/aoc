@@ -147,10 +147,9 @@ pub fn part2(input: String) -> usize {
 fn get_string_from_val(found: &Vec<(String, usize)>, value: usize) -> Option<String> {
     found
         .iter()
-        .filter(|(s, v)| *v == value)
+        .filter(|(_, v)| *v == value)
         .map(|(s, _)| s.clone())
         .next()
-        .clone()
 }
 
 fn safe_push(found: &mut Vec<(String, usize)>, i: (String, usize)) {

@@ -1,7 +1,3 @@
-use std::collections::HashMap;
-
-use aoc_lib::util::{parse_strings, to_lines};
-
 type V = [usize; 9];
 
 fn get_v(input: String) -> V {

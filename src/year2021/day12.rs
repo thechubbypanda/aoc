@@ -44,7 +44,7 @@ fn get_graph(input: String) -> Graph {
     for n in nodes.iter() {
         println!("{:?}", n);
     }
-    println!("");
+    println!();
     nodes
 }
 
@@ -58,9 +58,9 @@ pub fn part1(input: String) -> usize {
         &mut paths,
         &mut Vec::new(),
     );
-    for path in paths.iter() {
-        // println!("{:?}", path);
-    }
+    // for path in paths.iter() {
+    //     println!("{:?}", path);
+    // }
     paths.len()
 }
 
@@ -102,9 +102,9 @@ pub fn part2(input: String) -> usize {
         &mut paths,
         &mut Vec::new(),
     );
-    for path in paths.iter() {
-        // println!("{:?}", path);
-    }
+    // for path in paths.iter() {
+    //     println!("{:?}", path);
+    // }
     paths.len()
 }
 

@@ -10,7 +10,7 @@ const DO: char = '<';
 const DC: char = '>';
 
 const OPENS: [char; 4] = [AO, BO, CO, DO];
-const CLOSES: [char; 4] = [AC, BC, CC, DC];
+// const CLOSES: [char; 4] = [AC, BC, CC, DC];
 
 fn get_closing(c: char) -> char {
     match c {

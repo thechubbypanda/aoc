@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-pub fn to_lines(input: &String) -> Vec<String> {
+pub fn to_lines(input: &str) -> Vec<String> {
     input.lines().map(String::from).collect()
 }
 

@@ -1,4 +1,4 @@
-fn take_next(packet: &String, index: &mut usize, len: usize) -> String {
+fn take_next(packet: &str, index: &mut usize, len: usize) -> String {
     *index += len;
     let s = packet.chars().skip(*index - len).take(len).collect();
     // println!("{}", s);
@@ -37,7 +37,7 @@ pub fn part1(input: String) -> usize {
         .next()
         .unwrap()
         .chars()
-        .map(|c| to_binary(c))
+        .map(to_binary)
         .collect();
     // let input = "00111000000000000110111101000101001010010001001000000000".to_string();
     let mut versions = Vec::new();
@@ -46,33 +46,33 @@ pub fn part1(input: String) -> usize {
 }
 
 fn parse_packet_1(packet: &String, index: &mut usize, versions: &mut Vec<usize>) {
-    let v = from_bin(take_next(&packet, index, 3));
-    let t = from_bin(take_next(&packet, index, 3));
+    let v = from_bin(take_next(packet, index, 3));
+    let t = from_bin(take_next(packet, index, 3));
     println!("{}", t);
 
     versions.push(v);
 
     // println!("{}",  t);
     if t != 4 {
-        let i = from_bin(take_next(&packet, index, 1));
+        let i = from_bin(take_next(packet, index, 1));
         if i == 0 {
-            let l = from_bin(take_next(&packet, index, 15));
+            let l = from_bin(take_next(packet, index, 15));
             let q = *index + l;
             while *index < q {
-                parse_packet_1(&packet, index, versions);
+                parse_packet_1(packet, index, versions);
             }
         } else if i == 1 {
-            let l = from_bin(take_next(&packet, index, 11));
+            let l = from_bin(take_next(packet, index, 11));
             for _ in 0..l {
-                parse_packet_1(&packet, index, versions);
+                parse_packet_1(packet, index, versions);
             }
         }
     } else {
         let mut v = String::new();
         loop {
-            let g = take_next(&packet, index, 5);
+            let g = take_next(packet, index, 5);
             g.chars().skip(1).for_each(|c| v.push(c));
-            if g.chars().next().unwrap() == '0' {
+            if g.starts_with('0') {
                 break;
             }
         }
@@ -85,22 +85,22 @@ pub fn part2(input: String) -> usize {
         .next()
         .unwrap()
         .chars()
-        .map(|c| to_binary(c))
+        .map(to_binary)
         .collect();
     // let input = "00111000000000000110111101000101001010010001001000000000".to_string();
     parse_packet_2(&input, &mut 0)
 }
 
 fn parse_packet_2(packet: &String, index: &mut usize) -> usize {
-    let v = from_bin(take_next(&packet, index, 3));
-    let t = from_bin(take_next(&packet, index, 3));
+    let _ = from_bin(take_next(packet, index, 3));
+    let t = from_bin(take_next(packet, index, 3));
 
     if t == 4 {
         let mut v = String::new();
         loop {
-            let g = take_next(&packet, index, 5);
+            let g = take_next(packet, index, 5);
             g.chars().skip(1).for_each(|c| v.push(c));
-            if g.chars().next().unwrap() == '0' {
+            if g.starts_with('0') {
                 break;
             }
         }
@@ -108,17 +108,17 @@ fn parse_packet_2(packet: &String, index: &mut usize) -> usize {
     }
 
     let mut vs = Vec::new();
-    let i = from_bin(take_next(&packet, index, 1));
+    let i = from_bin(take_next(packet, index, 1));
     if i == 0 {
-        let l = from_bin(take_next(&packet, index, 15));
+        let l = from_bin(take_next(packet, index, 15));
         let q = *index + l;
         while *index < q {
-            vs.push(parse_packet_2(&packet, index));
+            vs.push(parse_packet_2(packet, index));
         }
     } else if i == 1 {
-        let l = from_bin(take_next(&packet, index, 11));
+        let l = from_bin(take_next(packet, index, 11));
         for _ in 0..l {
-            vs.push(parse_packet_2(&packet, index));
+            vs.push(parse_packet_2(packet, index));
         }
     }
     return match t {

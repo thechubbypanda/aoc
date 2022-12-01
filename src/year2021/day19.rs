@@ -13,13 +13,13 @@ impl std::fmt::Debug for Vec3 {
 }
 
 impl Vec3 {
-    fn cross(&self, v: Vec3) -> Self {
-        Self(
-            self.1 * v.2 - self.2 * v.1,
-            self.2 * v.0 - self.0 * v.2,
-            self.0 * v.1 - self.1 * v.0,
-        )
-    }
+    // fn cross(&self, v: Vec3) -> Self {
+    //     Self(
+    //         self.1 * v.2 - self.2 * v.1,
+    //         self.2 * v.0 - self.0 * v.2,
+    //         self.0 * v.1 - self.1 * v.0,
+    //     )
+    // }
 }
 
 impl Mul for Vec3 {
@@ -30,47 +30,45 @@ impl Mul for Vec3 {
     }
 }
 
-const XY: [Vec3; 4] = [
-    Vec3(1, 1, 1),
-    Vec3(1, -1, 1),
-    Vec3(-1, 1, 1),
-    Vec3(-1, -1, 1),
-];
-const YZ: [Vec3; 4] = [
-    Vec3(1, 1, 1),
-    Vec3(1, 1, -1),
-    Vec3(1, -1, 1),
-    Vec3(1, -1, -1),
-];
-const XZ: [Vec3; 4] = [
-    Vec3(1, 1, 1),
-    Vec3(1, 1, -1),
-    Vec3(-1, 1, 1),
-    Vec3(-1, 1, -1),
-];
+// const XY: [Vec3; 4] = [
+//     Vec3(1, 1, 1),
+//     Vec3(1, -1, 1),
+//     Vec3(-1, 1, 1),
+//     Vec3(-1, -1, 1),
+// ];
+// const YZ: [Vec3; 4] = [
+//     Vec3(1, 1, 1),
+//     Vec3(1, 1, -1),
+//     Vec3(1, -1, 1),
+//     Vec3(1, -1, -1),
+// ];
+// const XZ: [Vec3; 4] = [
+//     Vec3(1, 1, 1),
+//     Vec3(1, 1, -1),
+//     Vec3(-1, 1, 1),
+//     Vec3(-1, 1, -1),
+// ];
 
-fn rotations(beacons: Vec<Vec3>) -> Vec<Vec<Vec3>> {
-    let out = XY
-        .iter()
-        .map(|xy| {
-            YZ.iter()
-                .map(|yz| {
-                    XZ.iter()
-                        .map(|xz| {
-                            beacons
-                                .iter()
-                                .map(|b| *b * *xy * *yz * *xz)
-                                .collect::<Vec<Vec3>>()
-                        })
-                        .collect::<Vec<Vec<Vec3>>>()
-                })
-                .flatten()
-                .collect::<Vec<Vec<Vec3>>>()
-        })
-        .flatten()
-        .collect();
-    out
-}
+// fn rotations(beacons: Vec<Vec3>) -> Vec<Vec<Vec3>> {
+//     let out = XY
+//         .iter()
+//         .flat_map(|xy| {
+//             YZ.iter()
+//                 .flat_map(|yz| {
+//                     XZ.iter()
+//                         .map(|xz| {
+//                             beacons
+//                                 .iter()
+//                                 .map(|b| *b * *xy * *yz * *xz)
+//                                 .collect::<Vec<Vec3>>()
+//                         })
+//                         .collect::<Vec<Vec<Vec3>>>()
+//                 })
+//                 .collect::<Vec<Vec<Vec3>>>()
+//         })
+//         .collect();
+//     out
+// }
 
 pub fn part1(input: String) -> usize {
     let scans: Vec<Vec<Vec3>> = Regex::new(r"--- scanner \d+ ---")
@@ -79,11 +77,11 @@ pub fn part1(input: String) -> usize {
         .skip(1)
         .map(|sv| sv.trim())
         .map(|sv| {
-            to_lines(&sv.to_string())
+            to_lines(sv)
                 .into_iter()
                 .map(|b| {
-                    b.split(",")
-                        .map(|b_c| b_c.parse::<i32>().unwrap())
+                    b.split(',')
+                        .map(|b_c| b_c.parse().unwrap())
                         .collect::<Vec<i32>>()
                 })
                 .map(|b| Vec3(b[0], b[1], b[2]))
@@ -96,16 +94,16 @@ pub fn part1(input: String) -> usize {
 
     let beacons: HashSet<Vec3> = HashSet::new();
 
-    for s0 in scans.iter() {
-        for s1 in scans.iter() {
-            if s0 == s1 {
-                continue;
-            }
-            // rotations(*s1).iter().filter(||)
-            break; // t
-        }
-        break; // t
-    }
+    // for s0 in scans.iter() {
+    //     for s1 in scans.iter() {
+    //         if s0 == s1 {
+    //             continue;
+    //         }
+    //         // rotations(*s1).iter().filter(||)
+    //         break; // t
+    //     }
+    //     break; // t
+    // }
 
     println!("{:?}", beacons);
 
@@ -128,13 +126,13 @@ mod tests {
         run_real!(part1);
     }
 
-    #[test]
-    fn test_part2() {
-        run_test!(part2);
-    }
-
-    #[test]
-    fn run_part2() {
-        run_real!(part2);
-    }
+    // #[test]
+    // fn test_part2() {
+    //     run_test!(part2);
+    // }
+    //
+    // #[test]
+    // fn run_part2() {
+    //     run_real!(part2);
+    // }
 }
