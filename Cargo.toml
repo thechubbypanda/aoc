@@ -1,0 +1,13 @@
+[package]
+name = "aoc"
+version = "0.1.0"
+edition = "2021"
+authors = ["Keval Kapdee <keval@thechubbypanda.net>"]
+
+[workspace]
+members = ["aoc_lib"]
+
+[dependencies]
+aoc_lib = { path = "aoc_lib" }
+scanf = "1.2.1"
+regex = "1.7.0"
