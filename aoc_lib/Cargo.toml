@@ -1,6 +1,6 @@
 [package]
 name = "aoc-lib"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 authors = ["Keval Kapdee <keval@thechubbypanda.net>"]
 description = "A library that lets you focus on problem-solving rather than boilerplate when doing Advent of Code"
