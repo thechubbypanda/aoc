@@ -14,25 +14,24 @@ pub fn part1(input: String) -> usize {
     to_lines(&input)
         .into_iter()
         .map(|line| {
-            let l = line.chars().take(line.len() / 2).collect::<HashSet<char>>();
-            let r = line.chars().skip(line.len() / 2).collect::<HashSet<char>>();
-            let common = l.bitand(&r).into_iter().next().unwrap();
-            to_priority(common)
+            let (l, r) = line.split_at(line.len() / 2);
+            let l = l.chars().collect::<HashSet<char>>();
+            let r = r.chars().collect::<HashSet<char>>();
+            to_priority((&l & &r).into_iter().next().unwrap())
         })
         .sum()
 }
 
 pub fn part2(input: String) -> usize {
     to_lines(&input)
-        .windows(3)
-        .step_by(3)
+        .chunks(3)
         .map(|rucksacks| {
             let mut rucksacks = rucksacks
                 .iter()
                 .map(|rucksack| rucksack.chars().collect::<HashSet<char>>());
             let common = rucksacks
                 .next()
-                .map(|rucksack| rucksacks.fold(rucksack, |acc, r| acc.bitand(&r)))
+                .map(|rucksack| rucksacks.fold(rucksack, |acc, r| &acc & &r))
                 .unwrap()
                 .into_iter()
                 .next()
@@ -44,8 +43,9 @@ pub fn part2(input: String) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use aoc_lib::*;
+
+    use super::*;
 
     #[test]
     fn test_to_priority() {
