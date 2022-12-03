@@ -11,9 +11,8 @@ fn read_session_cookie() -> String {
     let filename = home::home_dir()
         .expect("Failed to find home directory")
         .join(".aoc.cookie");
-    println!("Reading session cookie from file: {:?}", filename);
-    std::fs::read_to_string(filename)
-        .expect("Failed to read from session file")
+    std::fs::read_to_string(&filename)
+        .unwrap_or_else(|_| panic!("Failed to read from session cookie file: {:?}", filename))
         .trim()
         .to_string()
 }

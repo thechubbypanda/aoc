@@ -1,4 +1,4 @@
-use std::{collections::HashSet, ops::BitAnd};
+use std::collections::HashSet;
 
 use aoc_lib::util::to_lines;
 
