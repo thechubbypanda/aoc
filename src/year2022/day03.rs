@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use aoc_lib::util::to_lines;
 
@@ -6,16 +6,12 @@ fn to_priority(item: char) -> usize {
     match item {
         _ if ('a'..='z').contains(&item) => item as usize - 'a' as usize + 1,
         _ if ('A'..='Z').contains(&item) => item as usize - 'A' as usize + 27,
-        _ => unreachable!(),
+        _ => panic!("Unexpected character: {}", item),
     }
 }
 
-fn parse_input(input: String) -> Vec<String> {
-    to_lines(&input)
-}
-
 pub fn part1(input: String) -> usize {
-    parse_input(input)
+    to_lines(&input)
         .into_iter()
         .map(|line| {
             (
@@ -31,25 +27,28 @@ pub fn part1(input: String) -> usize {
         .sum()
 }
 
+fn in_all(item: char, rucksacks: &[String]) -> bool {
+    rucksacks
+        .iter()
+        .map(|rucksack| rucksack.chars())
+        .all(|mut items| items.any(|v| v == item))
+}
+
+fn find_common_item(rucksacks: &[String]) -> Option<char> {
+    rucksacks
+        .iter()
+        .flat_map(|rucksack| rucksack.chars())
+        .collect::<HashSet<char>>()
+        .into_iter()
+        .find(|item| in_all(*item, rucksacks))
+}
+
 pub fn part2(input: String) -> usize {
-    parse_input(input)
+    to_lines(&input)
         .windows(3)
         .step_by(3)
-        .map(|group| {
-            let mut map: HashMap<char, usize> =
-                HashMap::from_iter(group[0].chars().zip((0..).map(|_| 1)));
-            let r2: HashSet<char> = HashSet::from_iter(group[1].chars());
-            for i in r2 {
-                let _ = match map.get(&i) {
-                    None => map.insert(i, 1),
-                    Some(_) => map.insert(i, 2),
-                };
-            }
-            let common = group[2]
-                .chars()
-                .find(|i| map.get(i).is_some() && *map.get(i).unwrap() == 2)
-                .unwrap();
-            to_priority(common)
+        .map(|rucksacks| {
+            to_priority(find_common_item(rucksacks).expect("Failed to find common character"))
         })
         .sum()
 }
