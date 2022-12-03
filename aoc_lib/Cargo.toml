@@ -5,7 +5,6 @@ edition = "2021"
 authors = ["Keval Kapdee <keval@thechubbypanda.net>"]
 description = "A library that lets you focus on problem-solving rather than boilerplate when doing Advent of Code"
 license = "Apache-2.0"
-license-file = "LICENSE"
 readme = "README.md"
 repository = "https://github.com/thechubbypanda/aoc"
 keywords = ["advent", "aoc"]
