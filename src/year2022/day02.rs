@@ -89,9 +89,9 @@ impl Points for Outcome {
 }
 
 fn parse_input<T, U>(input: String) -> Vec<(T, U)>
-    where
-        T: From<char>,
-        U: From<char>,
+where
+    T: From<char>,
+    U: From<char>,
 {
     to_lines(&input)
         .into_iter()
