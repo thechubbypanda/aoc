@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, ops::BitAnd};
 
 use aoc_lib::util::to_lines;
 
@@ -14,33 +14,12 @@ pub fn part1(input: String) -> usize {
     to_lines(&input)
         .into_iter()
         .map(|line| {
-            (
-                line.chars().take(line.len() / 2).collect::<Vec<char>>(),
-                line.chars().skip(line.len() / 2).collect::<Vec<char>>(),
-            )
-        })
-        .map(|(l, r)| {
-            let set: HashSet<char> = HashSet::from_iter(l.into_iter());
-            let common = r.iter().find(|i| set.contains(i)).unwrap();
-            to_priority(*common)
+            let l = line.chars().take(line.len() / 2).collect::<HashSet<char>>();
+            let r = line.chars().skip(line.len() / 2).collect::<HashSet<char>>();
+            let common = l.bitand(&r).into_iter().next().unwrap();
+            to_priority(common)
         })
         .sum()
-}
-
-fn in_all(item: char, rucksacks: &[String]) -> bool {
-    rucksacks
-        .iter()
-        .map(|rucksack| rucksack.chars())
-        .all(|mut items| items.any(|v| v == item))
-}
-
-fn find_common_item(rucksacks: &[String]) -> Option<char> {
-    rucksacks
-        .iter()
-        .flat_map(|rucksack| rucksack.chars())
-        .collect::<HashSet<char>>()
-        .into_iter()
-        .find(|item| in_all(*item, rucksacks))
 }
 
 pub fn part2(input: String) -> usize {
@@ -48,7 +27,17 @@ pub fn part2(input: String) -> usize {
         .windows(3)
         .step_by(3)
         .map(|rucksacks| {
-            to_priority(find_common_item(rucksacks).expect("Failed to find common character"))
+            let mut rucksacks = rucksacks
+                .iter()
+                .map(|rucksack| rucksack.chars().collect::<HashSet<char>>());
+            let common = rucksacks
+                .next()
+                .map(|rucksack| rucksacks.fold(rucksack, |acc, r| acc.bitand(&r)))
+                .unwrap()
+                .into_iter()
+                .next()
+                .unwrap();
+            to_priority(common)
         })
         .sum()
 }
