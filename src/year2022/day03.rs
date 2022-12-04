@@ -43,9 +43,8 @@ pub fn part2(input: String) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
-
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_to_priority() {
