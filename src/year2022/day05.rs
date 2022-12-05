@@ -1,5 +1,4 @@
 use aoc_lib::util::{to_lines, transpose};
-use itertools::Itertools;
 use regex::Regex;
 
 #[derive(Debug)]
@@ -15,12 +14,7 @@ fn parse_input(input: String) -> (Vec<Vec<char>>, Vec<Action>) {
     let mut lines: Vec<Vec<char>> = to_lines(split.next().unwrap())
         .into_iter()
         .map(|line| {
-            let row: Vec<char> = line
-                .chars()
-                .chunks(4)
-                .into_iter()
-                .map(|mut stack| stack.nth(1).unwrap())
-                .collect();
+            let row: Vec<char> = line.chars().skip(1).step_by(4).collect();
             row
         })
         .collect();
@@ -28,20 +22,15 @@ fn parse_input(input: String) -> (Vec<Vec<char>>, Vec<Action>) {
     let stack_count = lines.iter().map(|line| line.len()).max().unwrap();
     let lines: Vec<Vec<char>> = lines
         .into_iter()
-        .map(|line| {
-            let len = line.len();
-            (line, stack_count - len)
-        })
-        .map(|(mut line, to_add)| {
-            (0..to_add).for_each(|_| line.push(' '));
+        .map(|mut line| {
+            line.append(&mut vec![' '; stack_count - line.len()]);
             line
         })
         .collect();
-    let stacks = transpose(&lines);
-    let stacks = stacks
+    let stacks = transpose(&lines)
         .into_iter()
-        .map(|stack| stack.into_iter().rev().filter(|c| *c != ' ').collect_vec())
-        .collect_vec();
+        .map(|stack| stack.into_iter().rev().filter(|c| *c != ' ').collect())
+        .collect();
 
     let action_regex = Regex::new(r"^move (\d+) from (\d+) to (\d+)$").unwrap();
     let actions: Vec<Action> = to_lines(split.next().unwrap())
