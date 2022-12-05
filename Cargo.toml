@@ -11,3 +11,4 @@ members = ["aoc_lib"]
 aoc-lib = { path = "aoc_lib" }
 scanf = "1.2.1"
 regex = "1.7.0"
+itertools = "0.10.5"
