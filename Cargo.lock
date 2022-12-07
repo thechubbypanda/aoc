@@ -22,7 +22,7 @@ dependencies = [
 
 [[package]]
 name = "aoc-lib"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "home",
  "reqwest",

@@ -15,7 +15,10 @@ pub fn transpose<T>(input: &Vec<Vec<T>>) -> Vec<Vec<T>>
 where
     T: Copy,
 {
-    assert!(input.windows(2).all(|w| w[0].len() == w[1].len()));
+    assert!(
+        input.windows(2).all(|w| w[0].len() == w[1].len()),
+        "Not all inner vecs are the same size"
+    );
     (0..input[0].len())
         .map(|i| input.iter().map(|line| line[i]).collect())
         .collect()
