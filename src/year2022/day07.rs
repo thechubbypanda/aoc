@@ -2,7 +2,7 @@ use aoc_lib::util::to_lines;
 
 struct Directory {
     name: String,
-    contents: Vec<Structure>,
+    contents: Vec<Directory>,
     size: usize,
 }
 
@@ -12,38 +12,6 @@ impl Directory {
             name: name.to_string(),
             contents: vec![],
             size: 0,
-        }
-    }
-}
-
-struct File {
-    size: usize,
-}
-
-enum Structure {
-    File(File),
-    Dir(Directory),
-}
-
-impl Structure {
-    fn dir_mut(&mut self) -> Option<&mut Directory> {
-        match self {
-            Self::File(_) => None,
-            Self::Dir(d) => Some(d),
-        }
-    }
-
-    fn dir(&self) -> Option<&Directory> {
-        match self {
-            Self::File(_) => None,
-            Self::Dir(d) => Some(d),
-        }
-    }
-
-    fn size(&self) -> usize {
-        match self {
-            Self::File(f) => f.size,
-            Self::Dir(d) => d.size,
         }
     }
 }
@@ -66,24 +34,19 @@ fn populate(lines: &mut Vec<Vec<String>>, current_dir: &mut Directory) {
                 current_dir
                     .contents
                     .iter_mut()
-                    .filter_map(|structure| structure.dir_mut())
-                    .find(|structure| structure.name == dir_name)
+                    .find(|dir| dir.name == dir_name)
                     .unwrap(),
             ),
             ["dir", dir_name] => {
-                current_dir
-                    .contents
-                    .push(Structure::Dir(Directory::new(dir_name)));
+                current_dir.contents.push(Directory::new(dir_name));
             }
             [size, _] => {
-                current_dir.contents.push(Structure::File(File {
-                    size: size.parse().unwrap(),
-                }));
+                current_dir.size += size.parse::<usize>().unwrap();
             }
             [..] => {}
         }
     }
-    current_dir.size = current_dir.contents.iter().map(|s| s.size()).sum()
+    current_dir.size += current_dir.contents.iter().map(|d| d.size).sum::<usize>()
 }
 
 fn parse_input(input: String) -> Directory {
@@ -91,12 +54,12 @@ fn parse_input(input: String) -> Directory {
     populate(
         &mut to_lines(&input)
             .into_iter()
+            .skip(1)
             .map(|line| {
                 line.split_whitespace()
                     .map(|s| s.to_string())
                     .collect::<Vec<String>>()
             })
-            .skip(1)
             .rev()
             .collect::<Vec<Vec<String>>>(),
         &mut root,
@@ -110,7 +73,6 @@ fn collect_dirs(directory: &Directory) -> Vec<&Directory> {
         directory
             .contents
             .iter()
-            .filter_map(|structure| structure.dir())
             .flat_map(|dir| collect_dirs(dir).into_iter()),
     );
     dirs
