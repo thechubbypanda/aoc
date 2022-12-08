@@ -1,6 +1,5 @@
 use aoc_lib::util::{to_lines, transpose};
-use std::collections::{HashMap, HashSet};
-use std::fmt::{Debug, Formatter};
+use std::collections::HashSet;
 
 pub fn parse_input(input: &str) -> Vec<Vec<u8>> {
     to_lines(input)
@@ -54,7 +53,6 @@ pub fn part1(input: String) -> usize {
 
 #[derive(Copy, Clone)]
 struct Tree {
-    // pos: (usize, usize),
     height: u8,
     scores: [usize; 4],
 }
@@ -62,16 +60,9 @@ struct Tree {
 impl Tree {
     fn new(height: u8) -> Self {
         Self {
-            // pos: (y, x),
             height,
             scores: [0; 4],
         }
-    }
-}
-
-impl Debug for Tree {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&format!("h: {}, scores: {:?}", self.height, self.scores))
     }
 }
 
@@ -84,7 +75,7 @@ pub fn part2(input: String) -> usize {
         .into_iter()
         .map(|row| row.into_iter().map(Tree::new).collect())
         .collect();
-    for (y, row) in tree_grid.iter_mut().enumerate() {
+    for row in tree_grid.iter_mut() {
         for x in 0..row.len() {
             let immutable_row = row.clone();
             let (left, right) = immutable_row.split_at(x);
@@ -113,7 +104,7 @@ pub fn part2(input: String) -> usize {
         }
     }
     let mut tree_grid = transpose(&tree_grid);
-    for (y, row) in tree_grid.iter_mut().enumerate() {
+    for row in tree_grid.iter_mut() {
         for x in 0..row.len() {
             let immutable_row = row.clone();
             let (left, right) = immutable_row.split_at(x);
