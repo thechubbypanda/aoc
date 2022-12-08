@@ -1,5 +1,6 @@
 use aoc_lib::util::{to_lines, transpose};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
+use std::fmt::{Debug, Formatter};
 
 pub fn parse_input(input: &str) -> Vec<Vec<u8>> {
     to_lines(input)
@@ -8,57 +9,147 @@ pub fn parse_input(input: &str) -> Vec<Vec<u8>> {
         .collect()
 }
 
-fn visible(row: &Vec<u8>, reverse: bool) -> Vec<usize> {
-    if reverse {
-        let mut visible = vec![row.len() - 1];
-        let mut tallest = &row[row.len() - 1];
-        for (i, tree) in row.iter().enumerate().rev().skip(1) {
-            if tree > tallest {
-                tallest = tree;
-                visible.push(row.len() - 1 - i);
-            }
+fn visible(row: &Vec<u8>) -> HashSet<usize> {
+    let mut visible = HashSet::new();
+
+    // Forward
+    visible.insert(0);
+    let mut tallest = &row[0];
+    for (i, tree) in row.iter().enumerate().skip(1) {
+        if tree > tallest {
+            tallest = tree;
+            visible.insert(i);
         }
-        visible
-    } else {
-        let mut visible = vec![0];
-        let mut tallest = &row[0];
-        for (i, tree) in row.iter().enumerate().skip(1) {
-            if tree > tallest {
-                tallest = tree;
-                visible.push(i);
-            }
-        }
-        visible
     }
+
+    //Backward
+    visible.insert(row.len() - 1);
+    let mut tallest = &row[row.len() - 1];
+    for (i, tree) in row.iter().enumerate().rev().skip(1) {
+        if tree > tallest {
+            tallest = tree;
+            visible.insert(i);
+        }
+    }
+
+    visible
 }
 
 pub fn part1(input: String) -> usize {
     let tree_grid = parse_input(&input);
     let mut set: HashSet<(usize, usize)> = HashSet::new();
     for (y, row) in tree_grid.iter().enumerate() {
-        let mut xs: HashSet<usize> = HashSet::new();
-        xs.extend(visible(row, false).iter());
-        xs.extend(visible(row, true).iter());
-        println!("y: {y} - {:?}", xs);
-        for x in xs {
+        for x in visible(row) {
             set.insert((y, x));
         }
     }
     let tree_grid = transpose(&tree_grid);
     for (x, col) in tree_grid.iter().enumerate() {
-        let mut ys: HashSet<usize> = HashSet::new();
-        ys.extend(visible(col, false).iter());
-        ys.extend(visible(col, true).iter());
-        println!("x: {x} - {:?}", ys);
-        for y in ys {
+        for y in visible(col) {
             set.insert((y, x));
         }
     }
     set.len()
 }
 
+#[derive(Copy, Clone)]
+struct Tree {
+    // pos: (usize, usize),
+    height: u8,
+    scores: [usize; 4],
+}
+
+impl Tree {
+    fn new(height: u8) -> Self {
+        Self {
+            // pos: (y, x),
+            height,
+            scores: [0; 4],
+        }
+    }
+}
+
+impl Debug for Tree {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&format!("h: {}, scores: {:?}", self.height, self.scores))
+    }
+}
+
+// up = 0
+// left = 1
+// right = 2
+// down = 3
 pub fn part2(input: String) -> usize {
-    0
+    let mut tree_grid: Vec<Vec<Tree>> = parse_input(&input)
+        .into_iter()
+        .map(|row| row.into_iter().map(Tree::new).collect())
+        .collect();
+    for (y, row) in tree_grid.iter_mut().enumerate() {
+        for x in 0..row.len() {
+            let immutable_row = row.clone();
+            let (left, right) = immutable_row.split_at(x);
+            let mut count = 0;
+            for x1 in left.iter().rev() {
+                if x1.height < row[x].height {
+                    count += 1;
+                }
+                if x1.height >= row[x].height {
+                    count += 1;
+                    break;
+                }
+            }
+            row[x].scores[1] = count;
+            let mut count = 0;
+            for x2 in right.iter().skip(1) {
+                if x2.height < row[x].height {
+                    count += 1;
+                }
+                if x2.height >= row[x].height {
+                    count += 1;
+                    break;
+                }
+            }
+            row[x].scores[3] = count;
+        }
+    }
+    let mut tree_grid = transpose(&tree_grid);
+    for (y, row) in tree_grid.iter_mut().enumerate() {
+        for x in 0..row.len() {
+            let immutable_row = row.clone();
+            let (left, right) = immutable_row.split_at(x);
+            let mut count = 0;
+            for x1 in left.iter().rev() {
+                if x1.height < row[x].height {
+                    count += 1;
+                }
+                if x1.height >= row[x].height {
+                    count += 1;
+                    break;
+                }
+            }
+            row[x].scores[0] = count;
+            let mut count = 0;
+            for x2 in right.iter().skip(1) {
+                if x2.height < row[x].height {
+                    count += 1;
+                }
+                if x2.height >= row[x].height {
+                    count += 1;
+                    break;
+                }
+            }
+            row[x].scores[2] = count;
+        }
+    }
+    let tree_grid = transpose(&tree_grid);
+    tree_grid
+        .into_iter()
+        .flat_map(|row| {
+            row.into_iter()
+                .map(|t| t.scores.into_iter().product::<usize>())
+        })
+        .max()
+        .unwrap()
 }
 
 #[cfg(test)]
@@ -68,10 +159,12 @@ mod tests {
 
     #[test]
     fn test_visible() {
-        assert!(matches!(visible(&vec![2, 5, 5, 1, 2], false)[..], [0, 1]));
-        assert!(matches!(visible(&vec![2, 5, 5, 1, 2], true)[..], [0, 2]));
-        assert!(matches!(visible(&vec![7, 1, 3, 4, 9], false)[..], [0, 4]));
-        assert!(matches!(visible(&vec![7, 1, 3, 4, 9], true)[..], [0]));
+        let a = visible(&vec![2, 5, 5, 1, 2]);
+        assert!([0, 1, 2].iter().all(|i| a.contains(i)));
+
+        assert!([0, 1, 2].iter().all(|i| a.contains(i)));
+        let b = visible(&vec![7, 1, 3, 4, 9]);
+        assert!([0, 4].iter().all(|i| b.contains(i)));
     }
 
     #[test]
