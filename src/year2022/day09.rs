@@ -35,14 +35,13 @@ impl Debug for Move {
 fn parse_input(input: String) -> Vec<Move> {
     input
         .lines()
-        .filter_map(|line| {
-            if let [d, _, c] = line.as_bytes() {
-                Some(Move {
-                    dir: (*d as char).into(),
-                    count: (*c - b'0') as usize,
-                })
-            } else {
-                None
+        .map(|line| {
+            let mut split = line.split_whitespace();
+            let dir = split.next().unwrap().chars().next().unwrap();
+            let count = split.next().unwrap().parse::<usize>().unwrap();
+            Move {
+                dir: dir.into(),
+                count,
             }
         })
         .collect()
@@ -69,9 +68,7 @@ impl Pos {
     }
 }
 
-fn iterate(head: &mut Pos, tail: &mut Pos, dir: Dir) {
-    head.translate(dir);
-
+fn iterate(head: &Pos, tail: &mut Pos) {
     if head.x.abs_diff(tail.x) >= 2 {
         if head.x > tail.x {
             tail.translate(Dir::Right);
@@ -97,57 +94,50 @@ fn iterate(head: &mut Pos, tail: &mut Pos, dir: Dir) {
     }
 }
 
-fn visualise(iter: impl Iterator<Item = (i32, i32)>) {
-    let points = iter.collect::<Vec<_>>();
-    let (min_x, max_x, min_y, max_y) =
-        points
-            .iter()
-            .copied()
-            .fold((0, 0, 0, 0), |(min_x, max_x, min_y, max_y), (x, y)| {
-                (min_x.min(x), max_x.max(x), min_y.min(y), max_y.max(y))
-            });
-
-    for y in (min_y..=max_y).rev() {
-        for x in min_x..=max_x {
-            if x == 0 && y == 0 {
-                print!("s");
-            } else {
-                match points
-                    .iter()
-                    .enumerate()
-                    .find(|(_, p)| p.0 == x && p.1 == y)
-                    .map(|(i, _)| i)
-                {
-                    None => print!("."),
-                    Some(ix) => print!("#"),
-                }
-            }
-        }
-        println!();
-    }
-}
-
 pub fn part1(input: String) -> usize {
     let moves = parse_input(input);
 
     let mut tail_visited: HashSet<Pos> = HashSet::new();
-    let mut head = Pos::new();
-    let mut tail = Pos::new();
-    tail_visited.insert(tail);
+    let mut nodes = [Pos::new(); 2];
+    tail_visited.insert(nodes[1]);
 
     for dir in moves
         .into_iter()
         .flat_map(|m| (0..m.count).map(move |_| m.dir))
     {
-        iterate(&mut head, &mut tail, dir);
-        tail_visited.insert(tail);
+        nodes[0].translate(dir);
+        let mut iter = nodes.iter_mut();
+        let mut head = iter.next().unwrap();
+        for tail in iter {
+            iterate(head, tail);
+            head = tail;
+        }
+        tail_visited.insert(nodes[1]);
     }
-    visualise(tail_visited.iter().map(|pos| (pos.x as i32, pos.y as i32)));
     tail_visited.len()
 }
 
 pub fn part2(input: String) -> usize {
-    0
+    let moves = parse_input(input);
+
+    let mut tail_visited: HashSet<Pos> = HashSet::new();
+    let mut nodes = [Pos::new(); 10];
+    tail_visited.insert(*nodes.last().unwrap());
+
+    for dir in moves
+        .into_iter()
+        .flat_map(|m| (0..m.count).map(move |_| m.dir))
+    {
+        nodes[0].translate(dir);
+        let mut iter = nodes.iter_mut();
+        let mut head = iter.next().unwrap();
+        for tail in iter {
+            iterate(head, tail);
+            head = tail;
+        }
+        tail_visited.insert(*nodes.last().unwrap());
+    }
+    tail_visited.len()
 }
 
 #[cfg(test)]
