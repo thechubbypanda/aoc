@@ -1,4 +1,3 @@
-use aoc_lib::util::to_lines;
 use std::collections::HashSet;
 use std::fmt::{Debug, Formatter};
 
@@ -34,8 +33,8 @@ impl Debug for Move {
 }
 
 fn parse_input(input: String) -> Vec<Move> {
-    to_lines(&input)
-        .into_iter()
+    input
+        .lines()
         .filter_map(|line| {
             if let [d, _, c] = line.as_bytes() {
                 Some(Move {
@@ -73,35 +72,58 @@ impl Pos {
 fn iterate(head: &mut Pos, tail: &mut Pos, dir: Dir) {
     head.translate(dir);
 
-    if head.x - tail.x == 2 {
-        tail.translate(Dir::Right);
+    if head.x.abs_diff(tail.x) >= 2 {
+        if head.x > tail.x {
+            tail.translate(Dir::Right);
+        } else {
+            tail.translate(Dir::Left);
+        }
         if head.y > tail.y {
             tail.translate(Dir::Up);
         } else if head.y < tail.y {
             tail.translate(Dir::Down);
         }
-    } else if tail.x - head.x == 2 {
-        tail.translate(Dir::Left);
+    } else if head.y.abs_diff(tail.y) >= 2 {
         if head.y > tail.y {
             tail.translate(Dir::Up);
-        } else if head.y < tail.y {
+        } else {
             tail.translate(Dir::Down);
         }
-    } else if head.y - tail.y == 2 {
-        tail.translate(Dir::Up);
         if head.x > tail.x {
             tail.translate(Dir::Right);
         } else if head.x < tail.x {
             tail.translate(Dir::Left);
         }
-    } else if tail.y - head.y == 2 {
-        tail.translate(Dir::Down);
-        tail.translate(Dir::Up);
-        if head.x > tail.x {
-            tail.translate(Dir::Right);
-        } else if head.x < tail.x {
-            tail.translate(Dir::Left);
+    }
+}
+
+fn visualise(iter: impl Iterator<Item = (i32, i32)>) {
+    let points = iter.collect::<Vec<_>>();
+    let (min_x, max_x, min_y, max_y) =
+        points
+            .iter()
+            .copied()
+            .fold((0, 0, 0, 0), |(min_x, max_x, min_y, max_y), (x, y)| {
+                (min_x.min(x), max_x.max(x), min_y.min(y), max_y.max(y))
+            });
+
+    for y in (min_y..=max_y).rev() {
+        for x in min_x..=max_x {
+            if x == 0 && y == 0 {
+                print!("s");
+            } else {
+                match points
+                    .iter()
+                    .enumerate()
+                    .find(|(_, p)| p.0 == x && p.1 == y)
+                    .map(|(i, _)| i)
+                {
+                    None => print!("."),
+                    Some(ix) => print!("#"),
+                }
+            }
         }
+        println!();
     }
 }
 
@@ -113,13 +135,14 @@ pub fn part1(input: String) -> usize {
     let mut tail = Pos::new();
     tail_visited.insert(tail);
 
-    for m in moves.into_iter() {
-        for _ in 0..(m.count) {
-            iterate(&mut head, &mut tail, m.dir);
-            // println!("{:?}", tail);
-            tail_visited.insert(tail);
-        }
+    for dir in moves
+        .into_iter()
+        .flat_map(|m| (0..m.count).map(move |_| m.dir))
+    {
+        iterate(&mut head, &mut tail, dir);
+        tail_visited.insert(tail);
     }
+    visualise(tail_visited.iter().map(|pos| (pos.x as i32, pos.y as i32)));
     tail_visited.len()
 }
 
