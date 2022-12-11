@@ -9,124 +9,90 @@ enum Operation {
 }
 
 #[derive(Debug, Clone)]
-struct Test {
-    divisor: Item,
-    true_monkey: usize,
-    false_monkey: usize,
-}
-
-#[derive(Debug, Clone)]
 struct Monkey {
     items: Vec<Item>,
     operation: Operation,
-    test: Test,
+    divisor: Item,
+    true_monkey: usize,
+    false_monkey: usize,
     inspections: usize,
 }
 
-// pub fn product_of_factors(item: Item) -> Item {
-//     (1..item + 1).into_iter().filter(|&x| item % x == 0).product()
-// }
-
 impl Monkey {
-    fn parse(value: &str) -> Self {
+    fn parse(value: &str) -> Option<Self> {
         let mut lines = value.lines().skip(1);
         let items = lines
-            .next()
-            .unwrap()
-            .strip_prefix("  Starting items: ")
-            .unwrap()
+            .next()?
+            .strip_prefix("  Starting items: ")?
             .split(", ")
-            .map(|item| item.parse().unwrap())
-            .collect();
+            .map(|item| item.parse().ok())
+            .collect::<Option<Vec<Item>>>()?;
         let mut operands = lines
-            .next()
-            .unwrap()
-            .strip_prefix("  Operation: new = ")
-            .unwrap()
+            .next()?
+            .strip_prefix("  Operation: new = ")?
             .split_whitespace();
-        let num1 = operands.next().unwrap().parse().ok();
+        let num1 = operands.next()?.parse().ok();
         let op = operands.next().unwrap();
-        let num2 = operands.next().unwrap().parse().ok();
+        let num2 = operands.next()?.parse().ok();
         let operation = match op {
             "+" => Operation::Add(num1, num2),
             "*" => Operation::Mul(num1, num2),
             _ => panic!("Unknown operator: {op}"),
         };
-        let test = Test {
-            divisor: lines
-                .next()
-                .unwrap()
-                .strip_prefix("  Test: divisible by ")
-                .unwrap()
-                .parse()
-                .unwrap(),
-            true_monkey: lines
-                .next()
-                .unwrap()
-                .split_whitespace()
-                .last()
-                .unwrap()
-                .parse()
-                .unwrap(),
-            false_monkey: lines
-                .next()
-                .unwrap()
-                .split_whitespace()
-                .last()
-                .unwrap()
-                .parse()
-                .unwrap(),
-        };
-        Monkey {
+        let divisor = lines
+            .next()?
+            .strip_prefix("  Test: divisible by ")?
+            .parse()
+            .ok()?;
+        let true_monkey = lines.next()?.split_whitespace().last()?.parse().ok()?;
+        let false_monkey = lines.next()?.split_whitespace().last()?.parse().ok()?;
+        Some(Monkey {
             items,
             operation,
-            test,
+            divisor,
+            true_monkey,
+            false_monkey,
             inspections: 0,
+        })
+    }
+
+    fn inspect(&self, item: Item) -> Item {
+        match self.operation {
+            Operation::Add(a, b) => a.unwrap_or(item) + b.unwrap_or(item),
+            Operation::Mul(a, b) => a.unwrap_or(item) * b.unwrap_or(item),
         }
     }
 
-    fn inspect_1(&self, item: Item) -> Item {
-        let item = match self.operation {
-            Operation::Add(a, b) => a.unwrap_or(item) + b.unwrap_or(item),
-            Operation::Mul(a, b) => a.unwrap_or(item) * b.unwrap_or(item),
-        };
-        item / 3
-    }
-
-    fn inspect_2(&self, item: Item) -> Item {
-        // match self.operation {
-        //     Operation::Add(a, b) => a.unwrap_or(item) + b.unwrap_or(item),
-        //     Operation::Mul(a, b) => product_of_factors(a.unwrap_or(item) * b.unwrap_or(item)),
-        // }
-        item
-    }
-
     fn throw_to_monkey(&self, item: Item) -> usize {
-        if item % self.test.divisor == 0 {
-            self.test.true_monkey
+        if item % self.divisor == 0 {
+            self.true_monkey
         } else {
-            self.test.false_monkey
+            self.false_monkey
+        }
+    }
+}
+
+fn round(monkeys: &mut Vec<Monkey>, calm: impl Fn(Item) -> Item) {
+    for i in 0..monkeys.len() {
+        let items: Vec<Item> = monkeys[i].items.drain(0..).collect();
+        monkeys[i].inspections += items.len();
+        for item in items.into_iter() {
+            let item = calm(monkeys[i].inspect(item));
+            let new_monkey = monkeys[i].throw_to_monkey(item);
+            monkeys[new_monkey].items.push(item);
         }
     }
 }
 
 pub fn part1(input: String) -> usize {
-    let mut monkeys: Vec<Monkey> = input.split("\n\n").map(Monkey::parse).collect();
+    let mut monkeys: Vec<Monkey> = input
+        .split("\n\n")
+        .map(Monkey::parse)
+        .collect::<Option<Vec<Monkey>>>()
+        .unwrap();
 
-    for round in 0..20 {
-        println!("After round {}:", round + 1);
-        for i in 0..monkeys.len() {
-            let items: Vec<Item> = monkeys[i].items.drain(0..).collect();
-            monkeys[i].inspections += items.len();
-            for item in items.into_iter() {
-                let item = monkeys[i].inspect_1(item);
-                let new_monkey = monkeys[i].throw_to_monkey(item);
-                monkeys[new_monkey].items.push(item);
-            }
-        }
-        for (i, monkey) in monkeys.iter().enumerate() {
-            println!("Monkey {i}: {:?}", monkey.items);
-        }
+    for _round in 0..20 {
+        round(&mut monkeys, |item| item / 3);
     }
 
     let mut inspections: Vec<usize> = monkeys.into_iter().map(|m| m.inspections).collect();
@@ -135,18 +101,15 @@ pub fn part1(input: String) -> usize {
 }
 
 pub fn part2(input: String) -> usize {
-    let mut monkeys: Vec<Monkey> = input.split("\n\n").map(Monkey::parse).collect();
+    let mut monkeys: Vec<Monkey> = input
+        .split("\n\n")
+        .map(Monkey::parse)
+        .collect::<Option<Vec<Monkey>>>()
+        .unwrap();
+    let lcm: Item = monkeys.iter().map(|m| m.divisor).product();
 
     for _round in 0..10_000 {
-        for i in 0..monkeys.len() {
-            let items: Vec<Item> = monkeys[i].items.drain(0..).collect();
-            monkeys[i].inspections += items.len();
-            for item in items.into_iter() {
-                let item = monkeys[i].inspect_2(item);
-                let new_monkey = monkeys[i].throw_to_monkey(item);
-                monkeys[new_monkey].items.push(item);
-            }
-        }
+        round(&mut monkeys, |item| item % lcm);
     }
 
     let mut inspections: Vec<usize> = monkeys.into_iter().map(|m| m.inspections).collect();
@@ -156,9 +119,8 @@ pub fn part2(input: String) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use aoc_lib::*;
-
     use super::*;
+    use aoc_lib::*;
 
     #[test]
     fn test_part1() {
