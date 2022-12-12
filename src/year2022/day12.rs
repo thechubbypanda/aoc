@@ -2,6 +2,15 @@ use std::collections::{HashMap, HashSet};
 
 type Point = (usize, usize);
 
+fn parse_input(input: String) -> HashMap<Point, u8> {
+    input
+        .lines()
+        .map(|line| line.as_bytes().iter().enumerate().map(|(x, b)| (x, *b)))
+        .enumerate()
+        .flat_map(|(y, row)| row.map(move |(x, b)| ((y, x), b)))
+        .collect()
+}
+
 fn neighbours((y, x): Point) -> Vec<Point> {
     let mut ns = vec![(y, x + 1), (y + 1, x)];
     if x != 0 {
@@ -13,9 +22,23 @@ fn neighbours((y, x): Point) -> Vec<Point> {
     ns
 }
 
-fn dijkstra_to_goal(map: HashMap<Point, u8>, start: Point, goal: Point) -> usize {
+pub fn part1(input: String) -> usize {
+    let mut map = parse_input(input);
+    let start = map
+        .iter()
+        .find(|(_, v)| **v == b'S')
+        .map(|(p, _)| *p)
+        .unwrap();
+    let goal = map
+        .iter()
+        .find(|(_, v)| **v == b'E')
+        .map(|(p, _)| *p)
+        .unwrap();
+
+    map.insert(start, b'a');
+    map.insert(goal, b'z');
+
     let mut dist: HashMap<Point, usize> = map.keys().map(|p| (*p, usize::MAX)).collect();
-    // let mut prev: HashMap<Point, Option<Point>> = map.keys().map(|p| (*p, None)).collect();
     let mut q: HashSet<Point> = map.keys().copied().collect();
 
     dist.insert(start, 0);
@@ -42,44 +65,14 @@ fn dijkstra_to_goal(map: HashMap<Point, u8>, start: Point, goal: Point) -> usize
             let alt = dist[&u] + 1;
             if alt < dist[&v] {
                 dist.insert(v, alt);
-                // prev.insert(v, Some(u));
             }
         }
     }
-    0
-}
-
-pub fn part1(input: String) -> usize {
-    let mut map: HashMap<Point, u8> = input
-        .lines()
-        .map(|line| line.as_bytes().iter().enumerate().map(|(x, b)| (x, *b)))
-        .enumerate()
-        .flat_map(|(y, row)| row.map(move |(x, b)| ((y, x), b)))
-        .collect();
-    let start = map
-        .iter()
-        .find(|(_, v)| **v == b'S')
-        .map(|(p, _)| *p)
-        .unwrap();
-    let goal = map
-        .iter()
-        .find(|(_, v)| **v == b'E')
-        .map(|(p, _)| *p)
-        .unwrap();
-
-    map.insert(start, b'a');
-    map.insert(goal, b'z');
-
-    dijkstra_to_goal(map, start, goal)
+    panic!("Failed to find path")
 }
 
 pub fn part2(input: String) -> usize {
-    let mut map: HashMap<Point, u8> = input
-        .lines()
-        .map(|line| line.as_bytes().iter().enumerate().map(|(x, b)| (x, *b)))
-        .enumerate()
-        .flat_map(|(y, row)| row.map(move |(x, b)| ((y, x), b)))
-        .collect();
+    let mut map = parse_input(input);
     map.insert(
         map.iter()
             .find(|(_, v)| **v == b'S')
@@ -95,7 +88,6 @@ pub fn part2(input: String) -> usize {
     map.insert(goal, b'z');
 
     let mut dist: HashMap<Point, usize> = map.keys().map(|p| (*p, 99999999)).collect();
-    // let mut prev: HashMap<Point, Option<Point>> = map.keys().map(|p| (*p, None)).collect();
     let mut q: HashSet<Point> = map.keys().copied().collect();
 
     dist.insert(goal, 0);
@@ -119,13 +111,12 @@ pub fn part2(input: String) -> usize {
             let alt = dist[&u] + 1;
             if alt < dist[&v] {
                 dist.insert(v, alt);
-                // prev.insert(v, Some(u));
             }
         }
     }
 
     map.iter()
-        .filter(|(p, v)| **v == b'a')
+        .filter(|(_, v)| **v == b'a')
         .map(|(p, _)| dist[p])
         .min()
         .unwrap()
