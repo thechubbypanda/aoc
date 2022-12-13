@@ -11,3 +11,7 @@ members = ["aoc_lib"]
 aoc-lib = { path = "aoc_lib" }
 scanf = "1.2.1"
 regex = "1.7.0"
+
+[[bin]]
+name = "day13"
+path = "src/year2022/day13.rs"
