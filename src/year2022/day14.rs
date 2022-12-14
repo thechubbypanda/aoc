@@ -11,11 +11,8 @@ fn parse_input(input: String) -> HashSet<Point> {
         for (a, b) in line
             .split(" -> ")
             .map(|split| {
-                let mut pair = split.split(',');
-                (
-                    pair.next().unwrap().parse::<usize>().unwrap(),
-                    pair.next().unwrap().parse::<usize>().unwrap(),
-                )
+                let mut pair = split.split(',').map(|v| v.parse::<usize>().unwrap());
+                (pair.next().unwrap(), pair.next().unwrap())
             })
             .tuple_windows()
         {
@@ -33,50 +30,45 @@ fn parse_input(input: String) -> HashSet<Point> {
     rocks
 }
 
+fn find_new_pos(s: Point, filled: &HashSet<Point>) -> Option<Point> {
+    [(s.0, s.1 + 1), (s.0 - 1, s.1 + 1), (s.0 + 1, s.1 + 1)]
+        .into_iter()
+        .find(|possibility| !filled.contains(possibility))
+}
+
 pub fn part1(input: String) -> usize {
     let mut filled = parse_input(input);
-    let mut sand_count = 0;
+    let initial_filled = filled.len();
+    let max_y = filled.iter().map(|(_, y)| *y).max().unwrap();
     'sands: loop {
         let mut s = (500, 0);
-        'sand: loop {
-            let can_move = [(s.0, s.1 + 1), (s.0 - 1, s.1 + 1), (s.0 + 1, s.1 + 1)]
-                .into_iter()
-                .find(|possibility| !filled.contains(possibility));
-            if let Some(new) = can_move {
-                s = new;
-                if s.1 > filled.iter().map(|(_, y)| *y).max().unwrap() {
-                    break 'sands;
-                }
-            } else {
-                filled.insert(s);
-                break 'sand;
+        while let Some(new_pos) = find_new_pos(s, &filled) {
+            s = new_pos;
+            if s.1 > max_y {
+                break 'sands;
             }
         }
-        sand_count += 1;
+        filled.insert(s);
     }
-    sand_count
+    filled.len() - initial_filled
 }
 
 pub fn part2(input: String) -> usize {
     let mut filled = parse_input(input);
     let floor_y = filled.iter().map(|(_, y)| *y).max().unwrap() + 2;
-    let mut sand_count = 0;
+    let initial_filled = filled.len();
     while !filled.contains(&(500, 0)) {
         let mut s = (500, 0);
-        loop {
-            let new_pos = [(s.0, s.1 + 1), (s.0 - 1, s.1 + 1), (s.0 + 1, s.1 + 1)]
-                .into_iter()
-                .find(|possibility| !filled.contains(possibility));
-            if new_pos.is_some() && new_pos.unwrap().1 < floor_y {
-                s = new_pos.unwrap();
+        while let Some(new_pos) = find_new_pos(s, &filled) {
+            if new_pos.1 < floor_y {
+                s = new_pos;
             } else {
-                filled.insert(s);
                 break;
             }
         }
-        sand_count += 1;
+        filled.insert(s);
     }
-    sand_count
+    filled.len() - initial_filled
 }
 
 #[cfg(test)]

@@ -1,5 +1,4 @@
-use aoc_lib::run_test;
-use std::{cmp::Ordering, fmt::format};
+use std::cmp::Ordering;
 
 #[derive(Debug, Clone)]
 enum Obj {
@@ -138,8 +137,4 @@ mod tests {
     fn run_part2() {
         run_real!(part2);
     }
-}
-
-fn main() {
-    run_test!(part2);
 }
