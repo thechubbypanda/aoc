@@ -97,9 +97,6 @@ pub fn part2(input: String) -> usize {
     packets.push(divider1.clone());
     packets.push(divider2.clone());
     packets.sort_by(cmp);
-    for packet in packets.iter() {
-        println!("{:?}", packet);
-    }
     let index1 = packets
         .iter()
         .enumerate()
