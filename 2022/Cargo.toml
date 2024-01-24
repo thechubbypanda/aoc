@@ -1,0 +1,11 @@
+[package]
+name = "2022"
+version = "0.1.0"
+edition = "2021"
+authors = ["Keval Kapdee <keval@thechubbypanda.net>"]
+
+[dependencies]
+aoc-lib = { path = "../rust_aoc_lib" }
+scanf = "1.2.1"
+regex = "1.7.0"
+itertools = "0.10.5"

@@ -1,9 +1,11 @@
 # Advent of Code
 
-## [Advent of Code Helper Library](aoc_lib)
+## [Advent of Code Rust Helper Library](rust_aoc_lib)
 
-My Rust AOC helper library, see it's [README](aoc_lib/README.md).
+My Rust AOC helper library, see it's [README](rust_aoc_lib/README.md).
 
 ## Years
 
-Each year is in its own folder in the repo.
+I started with Rust in 2020, refining over the following years.
+
+I tried Golang one year but gave up rather quickly, in 2023 I tried again and succeeded.
