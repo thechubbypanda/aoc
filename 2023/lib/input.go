@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"io"
@@ -9,11 +9,11 @@ import (
 	"strings"
 )
 
-func getInput(year int, day int) string {
+func GetInput(year int, day int) []string {
 	cacheFile := "input/" + strconv.Itoa(day) + ".txt"
 	bytes, err := os.ReadFile(cacheFile)
 	if err == nil {
-		return string(bytes)
+		return strings.Split(strings.TrimSpace(string(bytes)), "\n")
 	}
 	bytes, err = os.ReadFile("/home/keval/.aoc_cookie")
 	if err != nil {
@@ -40,5 +40,5 @@ func getInput(year int, day int) string {
 	if err != nil {
 		log.Println("Warning, failed to cache input: ", err.Error())
 	}
-	return string(bytes)
+	return strings.Split(strings.TrimSpace(string(bytes)), "\n")
 }
