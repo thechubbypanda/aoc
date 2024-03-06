@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// Returns lines as a string array
 func GetInput(year int, day int) []string {
 	cacheFile := "input/" + strconv.Itoa(day) + ".txt"
 	bytes, err := os.ReadFile(cacheFile)
