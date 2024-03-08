@@ -43,3 +43,13 @@ func GetInput(year int, day int) []string {
 	}
 	return strings.Split(strings.TrimSpace(string(bytes)), "\n")
 }
+
+func GetTestInput(_ int, day int) []string {
+	file := "input/" + strconv.Itoa(day) + ".test.txt"
+	bytes, err := os.ReadFile(file)
+	if err == nil {
+		return strings.Split(strings.TrimSpace(string(bytes)), "\n")
+	}
+	log.Fatalln("Failed to read file:", file)
+	return nil
+}
