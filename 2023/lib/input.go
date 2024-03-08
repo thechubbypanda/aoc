@@ -44,7 +44,7 @@ func GetInput(year int, day int) []string {
 	return strings.Split(strings.TrimSpace(string(bytes)), "\n")
 }
 
-func GetTestInput(_ int, day int) []string {
+func GetTestInput(day int) []string {
 	file := "input/" + strconv.Itoa(day) + ".test.txt"
 	bytes, err := os.ReadFile(file)
 	if err == nil {
