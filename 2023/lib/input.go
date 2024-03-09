@@ -1,6 +1,7 @@
 package lib
 
 import (
+	bytes2 "bytes"
 	"io"
 	"log"
 	"net/http"
@@ -46,9 +47,11 @@ func GetInput(year int, day int) []string {
 
 func GetTestInput(day int) []string {
 	file := "input/" + strconv.Itoa(day) + ".test.txt"
-	bytes, err := os.ReadFile(file)
+	f, err := os.OpenFile(file, os.O_CREATE|os.O_RDONLY, 0644)
+	bytes := bytes2.NewBuffer(nil)
+	_, err = io.Copy(bytes, f)
 	if err == nil {
-		return strings.Split(strings.TrimSpace(string(bytes)), "\n")
+		return strings.Split(strings.TrimSpace(string(bytes.Bytes())), "\n")
 	}
 	log.Fatalln("Failed to read file:", file)
 	return nil
