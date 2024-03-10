@@ -23,6 +23,8 @@ type handType = uint8
 type hand struct {
 	cards cards
 	bid   int
+	type1 handType
+	type2 handType
 }
 
 func getHands(input []string) []hand {
@@ -35,12 +37,12 @@ func getHands(input []string) []hand {
 			cards[i] = table[c]
 		}
 		bid, _ := strconv.Atoi(handBid[1])
-		hands = append(hands, hand{cards, bid})
+		hands = append(hands, hand{cards, bid, getType1(cards), getType2(cards)})
 	}
 	return hands
 }
 
-func getPart1Type(cards cards) handType {
+func getType1(cards cards) handType {
 	counts := make(map[uint8]uint8)
 	for _, card := range cards {
 		counts[card] += 1
@@ -70,53 +72,65 @@ func getPart1Type(cards cards) handType {
 	}
 }
 
-func getPart2Type(cards cards) handType {
+func getType2(cards cards) handType {
 	counts := make(map[uint8]uint8)
 	for _, card := range cards {
 		counts[card] += 1
 	}
-	jCount, jExists := counts[13]
+	jCount, jExists := counts[11]
 	switch len(counts) {
 	case 1:
+		// 22222
+		// JJJJJ
 		return 6
 	case 2:
-		var t uint8 = 69
+		if jExists {
+			// JJJJ2
+			// J2222
+			// JJ222
+			// JJJ22
+			return 6
+		}
 		if slices.Contains(maps.Values(counts), 4) {
-			t = 5
-		} else {
-			t = 4
+			// 22223
+			return 5
 		}
-		if jExists && jCount != 4 {
-			return t + jCount
-		}
-		return t
+		// 22233
+		return 4
 	case 3:
 		if slices.Contains(maps.Values(counts), 3) {
-			if jExists && jCount != 3 {
-				return 3 + jCount
-			}
-			return 3
-		} else {
 			if jExists {
-				if jCount != 2 {
-					return 4
-				}
+				// J3444
+				// JJJ23
 				return 5
 			}
-			return 2
-		}
-	case 4:
-		if jExists {
-			if jCount != 1 {
-				return 2
-			}
+			// 23444
 			return 3
 		}
+		if jExists {
+			if jCount == 2 {
+				// JJ233
+				return 5
+			}
+			// J2233
+			return 4
+		}
+		// 23344
+		return 2
+	case 4:
+		if jExists {
+			// J2344
+			// JJ234
+			return 3
+		}
+		// 23455
 		return 1
 	case 5:
 		if jExists {
+			// J2345
 			return 1
 		}
+		// 23456
 		return 0
 	default:
 		log.Fatalln("Unexpected card count")
@@ -127,13 +141,11 @@ func getPart2Type(cards cards) handType {
 func run(input []string) {
 	hands := getHands(input)
 
-	part1Types := make([]handType, len(hands))
-	for i, h := range hands {
-		part1Types[i] = getPart1Type(h.cards)
-	}
 	sort.Slice(hands, func(i, j int) bool {
-		if part1Types[i] != part1Types[j] {
-			return part1Types[i] < part1Types[j]
+		thi := hands[i].type1
+		thj := hands[j].type1
+		if thi != thj {
+			return thi < thj
 		}
 		for k := range 5 {
 			if hands[i].cards[k] != hands[j].cards[k] {
@@ -156,13 +168,11 @@ func run(input []string) {
 		}
 	}
 
-	part2Types := make([]handType, len(hands))
-	for i, h := range hands {
-		part2Types[i] = getPart2Type(h.cards)
-	}
 	sort.Slice(hands, func(i, j int) bool {
-		if part1Types[i] != part1Types[j] {
-			return part1Types[i] < part1Types[j]
+		thi := hands[i].type2
+		thj := hands[j].type2
+		if thi != thj {
+			return thi < thj
 		}
 		for k := range 5 {
 			if hands[i].cards[k] != hands[j].cards[k] {
